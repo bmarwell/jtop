@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>de.bmarwell.jtop</groupId>
+  <artifactId>jtop</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <java.version>21</java.version>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
+    <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+    <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+    <project.primarylicense.name>Apache-2.0</project.primarylicense.name>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <dependency.lanterna.version>3.1.2</dependency.lanterna.version>
+    <dependency.palantir-java-format.version>2.47.0</dependency.palantir-java-format.version>
+
+    <!-- 3rd party plugins -->
+    <plugin.spotless.version>2.43.0</plugin.spotless.version>
+  </properties>
+
+  <modules>
+    <module>app</module>
+    <module>library</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.googlecode.lanterna</groupId>
+        <artifactId>lanterna</artifactId>
+        <version>${dependency.lanterna.version}</version>
+      </dependency>
+
+      <!-- build only -->
+      <dependency>
+        <groupId>com.palantir.javaformat</groupId>
+        <artifactId>palantir-java-format</artifactId>
+        <version>${dependency.palantir-java-format.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- 3rd party plugins -->
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>${plugin.spotless.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-format</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>apply</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <formats>
+            <format>
+              <includes>
+                <include>*.adoc</include>
+                <include>*.md</include>
+                <include>*.xml</include>
+                <include>.gitignore</include>
+              </includes>
+              <!-- define the steps to apply to those files -->
+              <trimTrailingWhitespace/>
+              <endWithNewline/>
+              <indent>
+                <tabs>false</tabs>
+                <spaces>true</spaces>
+                <spacesPerTab>2</spacesPerTab>
+              </indent>
+            </format>
+          </formats>
+
+          <java>
+            <cleanthat>
+              <version>2.11</version>
+              <mutators>
+                <mutator>*</mutator>
+              </mutators>
+              <excludedMutators>
+                <excludedMutator>AvoidFileStream</excludedMutator>
+              </excludedMutators>
+            </cleanthat>
+
+            <importOrder/>
+            <removeUnusedImports/>
+
+            <palantirJavaFormat>
+              <version>${dependency.palantir-java-format.version}</version>
+            </palantirJavaFormat>
+
+            <licenseHeader>
+              <content><![CDATA[
+/*
+ * Copyright (C) $YEAR.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+]]></content>
+            </licenseHeader>
+          </java>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
