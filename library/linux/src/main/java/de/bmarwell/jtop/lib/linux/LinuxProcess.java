@@ -13,20 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.bmarwell.jtop.lib.aix;
+package de.bmarwell.jtop.lib.linux;
 
-import de.bmarwell.jtop.lib.api.spi.ProcessH;
-import de.bmarwell.jtop.lib.api.spi.ProcessInfoServiceLoader;
+import de.bmarwell.jtop.lib.api.spi.AbstractProcessH;
 
-public class LinuxProcessInfoServiceLoader implements ProcessInfoServiceLoader {
-
-    @Override
-    public boolean isOs(String currentOs) {
-        return currentOs.startsWith("Linux");
-    }
-
-    @Override
-    public ProcessH newProcessH() {
-        return new LinuxProcess();
-    }
-}
+public class LinuxProcess extends AbstractProcessH {}
