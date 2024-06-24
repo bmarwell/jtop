@@ -18,14 +18,39 @@ package de.bmarwell.jtop.lib.api.spi;
 import de.bmarwell.jtop.lib.api.ProcessInfo;
 import de.bmarwell.jtop.lib.api.ProcessInfoMapper;
 import java.util.List;
+import java.util.function.Predicate;
+import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractProcessH implements ProcessH {
 
     private final ProcessInfoMapper processInfoMapper = new ProcessInfoMapper();
 
     @Override
-    public List<ProcessInfo> listAllProcesses() {
+    public List<ProcessInfo> listAllProcesses(final @Nullable String user) {
+        Predicate<ProcessInfo> userFilter = processInfo -> {
+            if (user == null) {
+                // not filtered
+                return true;
+            }
+
+            return processInfo.user().equals(user);
+        };
+
         final var processHandleStream = ProcessHandle.allProcesses();
-        return processHandleStream.map(processInfoMapper::getProcessInfo).toList();
+        return processHandleStream
+                .map(processInfoMapper::getProcessInfo)
+                .map(this::mapProcessOs)
+                .filter(userFilter)
+                .limit(256)
+                .toList();
+    }
+
+    /**
+     * Method which can be overridden per system to enrich / fix process information.
+     * @param processInfo the processinfo to "fix"
+     * @return the fixed processInfo
+     */
+    public ProcessInfo mapProcessOs(ProcessInfo processInfo) {
+        return processInfo;
     }
 }

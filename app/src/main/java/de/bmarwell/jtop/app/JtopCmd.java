@@ -15,34 +15,63 @@
  */
 package de.bmarwell.jtop.app;
 
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import org.jspecify.annotations.Nullable;
+import picocli.CommandLine;
 
-public class JtopCmd {
+@CommandLine.Command(
+        name = "jtop",
+        mixinStandardHelpOptions = true,
+        description = "An interactive process viewer written in Java.")
+public class JtopCmd implements Callable<Integer> {
+
+    @CommandLine.Option(
+            names = {"-u", "--user"},
+            description = "only show processes owned by user")
+    private @Nullable String user;
+
+    JtopMainView jtopMainView = new JtopMainView();
 
     public static void main(String[] args) throws IOException {
-
         // parse args
+        CommandLine commandLine = new CommandLine(new JtopCmd());
+        CommandLine.ParseResult parseResult = commandLine.parseArgs(args);
 
-        JtopMainView jtopMainView = new JtopMainView();
+        if (parseResult.isUsageHelpRequested()) {
+            commandLine.usage(System.out);
+            System.exit(0);
+        }
 
+        int execute = commandLine.execute(args);
+        System.exit(execute);
+    }
+
+    @Override
+    public Integer call() throws Exception {
         try (Terminal terminal = new DefaultTerminalFactory().createTerminal()) {
             terminal.enterPrivateMode();
 
             while (true) {
                 terminal.clearScreen();
                 terminal.setCursorVisible(false);
+                TerminalSize terminalSize = terminal.getTerminalSize();
+                int rows = terminalSize.getRows();
+                int columns = terminalSize.getColumns();
 
-                jtopMainView.printProcessListHeader(terminal);
-                jtopMainView.printProcessList(terminal);
-                jtopMainView.printFooter(terminal);
+                jtopMainView.printProcessListHeader(terminal, rows, columns);
+                jtopMainView.printProcessList(terminal, rows, columns, this.user);
+                jtopMainView.printFooter(terminal, rows, columns);
 
                 try {
                     terminal.flush();
 
                     TimeUnit.MILLISECONDS.sleep(2000L);
+                    return 0;
                 } catch (final IOException ioException2) {
                     ioException2.printStackTrace();
                 } catch (InterruptedException interruptedException) {

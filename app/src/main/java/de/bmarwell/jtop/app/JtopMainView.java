@@ -25,11 +25,12 @@ import de.bmarwell.jtop.lib.api.spi.ProcessInfoServiceLoader;
 import java.io.IOException;
 import java.util.ServiceLoader;
 import java.util.function.Function;
+import org.jspecify.annotations.Nullable;
 
 public class JtopMainView {
 
-    record Column(String name, int length, Function<ProcessInfo, Object> extractor, boolean rightAlighed) {
-        Column(String name, int length, Function<ProcessInfo, Object> extractor) {
+    record Column(String name, int length, Function<ProcessInfo, String> extractor, boolean rightAlighed) {
+        Column(String name, int length, Function<ProcessInfo, String> extractor) {
             this(name, length, extractor, true);
         }
 
@@ -39,7 +40,7 @@ public class JtopMainView {
     }
 
     private static final Column[] DEFAULT_COLUMNS = new Column[] {
-        new Column("PID", 8, ProcessInfo::pid),
+        new Column("PID", 8, processInfo -> String.valueOf(processInfo.pid())),
         Column.empty(),
         new Column("User", 10, ProcessInfo::user, false),
         Column.empty(),
@@ -79,22 +80,19 @@ public class JtopMainView {
         return 0;
     }
 
-    public void printProcessListHeader(Terminal terminal) throws IOException {
+    public void printProcessListHeader(Terminal terminal, int rows, int columns) throws IOException {
         final TextGraphics textGraphics = newTextGraphics(terminal);
 
         int headerRows = getHeaderRows();
         int getProcessesHeaderRow = headerRows + 1;
 
-        textGraphics.putString(
-                0,
-                getProcessesHeaderRow,
-                String.format("%s", " ".repeat(terminal.getTerminalSize().getColumns() - 1)));
+        textGraphics.putString(0, getProcessesHeaderRow, String.format("%s", " ".repeat(columns - 1)));
 
         int col = 0;
         for (Column column : DEFAULT_COLUMNS) {
             final int length;
             if (column.length <= 0) {
-                length = terminal.getTerminalSize().getColumns() - col;
+                length = columns - col;
             } else {
                 length = column.length;
             }
@@ -105,18 +103,23 @@ public class JtopMainView {
         }
     }
 
-    public void printProcessList(Terminal terminal) throws IOException {
+    public void printProcessList(Terminal terminal, int rows, int cols, final @Nullable String user)
+            throws IOException {
         final TextGraphics textGraphics = newTextGraphics(terminal);
 
         int headerRows = getHeaderRows();
         int getProcessesStartRow = headerRows + 2;
 
-        final var processInfos = processH.listAllProcesses();
+        final var processInfos = processH.listAllProcesses(user);
         int currentProcRow = getProcessesStartRow;
 
         for (ProcessInfo processInfo : processInfos) {
-            if (currentProcRow >= terminal.getTerminalSize().getRows()) {
+            if (currentProcRow >= rows - 1) {
                 break;
+            }
+
+            if (processInfo.commandLine().isBlank()) {
+                continue;
             }
 
             int col = 0;
@@ -124,13 +127,16 @@ public class JtopMainView {
             for (Column column : DEFAULT_COLUMNS) {
                 final int length;
                 if (column.length <= 0) {
-                    length = terminal.getTerminalSize().getColumns() - col;
+                    length = cols - col;
                 } else {
                     length = column.length;
                 }
 
                 final String format = "%" + (column.rightAlighed ? "" : "-") + length + "s";
-                textGraphics.putString(col, currentProcRow, String.format(format, column.extractor.apply(processInfo)));
+                final String colText = column.extractor.apply(processInfo);
+                int maxLength = Math.min(length, colText.length());
+                final var cmdstring = String.format(format, colText.substring(0, maxLength));
+                textGraphics.putString(col, currentProcRow, cmdstring);
 
                 col += column.length;
             }
@@ -139,10 +145,10 @@ public class JtopMainView {
         }
     }
 
-    public void printFooter(Terminal terminal) throws IOException {
+    public void printFooter(Terminal terminal, int rows, int columns) throws IOException {
         final TextGraphics textGraphics = newTextGraphics(terminal);
 
-        int lastRow = terminal.getTerminalSize().getRows() - 1;
+        int lastRow = rows - 1;
 
         textGraphics.putString(0, lastRow, "F1");
         textGraphics.putString(2, lastRow, "Help  ", SGR.REVERSE);

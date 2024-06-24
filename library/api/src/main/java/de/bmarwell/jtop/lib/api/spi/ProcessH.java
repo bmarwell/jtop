@@ -17,8 +17,9 @@ package de.bmarwell.jtop.lib.api.spi;
 
 import de.bmarwell.jtop.lib.api.ProcessInfo;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 public interface ProcessH {
 
-    List<ProcessInfo> listAllProcesses();
+    List<ProcessInfo> listAllProcesses(@Nullable String user);
 }
