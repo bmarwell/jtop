@@ -20,6 +20,9 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.jspecify.annotations.Nullable;
 import picocli.CommandLine;
@@ -35,7 +38,14 @@ public class JtopCmd implements Callable<Integer> {
             description = "only show processes owned by user")
     private @Nullable String user;
 
-    JtopMainView jtopMainView = new JtopMainView();
+    final JtopMainView jtopMainView = new JtopMainView();
+
+    final ScheduledExecutorService scheduledExecutorService =
+            Executors.newScheduledThreadPool(4, Thread.ofVirtual().factory());
+
+    private ScheduledFuture<?> refresher;
+
+    Throwable error = null;
 
     public static void main(String[] args) throws IOException {
         // parse args
@@ -55,31 +65,54 @@ public class JtopCmd implements Callable<Integer> {
     public Integer call() throws Exception {
         try (Terminal terminal = new DefaultTerminalFactory().createTerminal()) {
             terminal.enterPrivateMode();
+            terminal.setCursorVisible(false);
+
+            this.refresher = this.scheduledExecutorService.scheduleWithFixedDelay(
+                    () -> refreshScreen(terminal), 50L, 2_000L, TimeUnit.MILLISECONDS);
+            Runtime.getRuntime().addShutdownHook(new Thread(this::cleanup));
 
             while (true) {
-                terminal.clearScreen();
-                terminal.setCursorVisible(false);
-                TerminalSize terminalSize = terminal.getTerminalSize();
-                int rows = terminalSize.getRows();
-                int columns = terminalSize.getColumns();
+                final var keyStroke = terminal.readInput();
 
-                jtopMainView.printProcessListHeader(terminal, rows, columns);
-                jtopMainView.printProcessList(terminal, rows, columns, this.user);
-                jtopMainView.printFooter(terminal, rows, columns);
-
-                try {
-                    terminal.flush();
-
-                    TimeUnit.MILLISECONDS.sleep(2000L);
+                if (!keyStroke.isCtrlDown() && keyStroke.getCharacter().equals('q')) {
                     return 0;
-                } catch (final IOException ioException2) {
-                    ioException2.printStackTrace();
-                } catch (InterruptedException interruptedException) {
-                    interruptedException.printStackTrace();
+                }
+
+                if (keyStroke.isCtrlDown() && keyStroke.getCharacter().equals('c')) {
+                    return 0;
                 }
             }
-        } catch (final IOException ioException) {
-            throw ioException;
+        }
+    }
+
+    private void cleanup() {
+        this.scheduledExecutorService.shutdown();
+
+        if (this.refresher != null) {
+            this.refresher.cancel(true);
+        }
+
+        this.scheduledExecutorService.shutdownNow();
+    }
+
+    private void refreshScreen(Terminal terminal) {
+        try {
+            terminal.clearScreen();
+            terminal.resetColorAndSGR();
+            terminal.setCursorPosition(0, 0);
+            TerminalSize terminalSize = terminal.getTerminalSize();
+            int rows = terminalSize.getRows();
+            int columns = terminalSize.getColumns();
+
+            jtopMainView.initScreenRefresh(terminal);
+            jtopMainView.printProcessListHeader(terminal, rows, columns);
+            jtopMainView.printProcessList(terminal, rows, columns, this.user);
+            jtopMainView.printFooter(terminal, rows, columns);
+
+            terminal.flush();
+            terminal.resetColorAndSGR();
+        } catch (IOException ioException) {
+            this.error = ioException;
         }
     }
 }

@@ -25,7 +25,7 @@ public class ProcessInfoMapper {
         return new ProcessInfo(
                 ph.pid(),
                 ph.parent().map(ProcessHandle::pid).orElse(1L),
-                ph.info().user().orElse("user"),
+                ph.info().user().orElse(""),
                 ph.info().command().orElse(""),
                 ph.info().arguments().map(Arrays::asList).orElse(emptyList()));
     }
