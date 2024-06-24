@@ -41,7 +41,6 @@ public abstract class AbstractProcessH implements ProcessH {
                 .map(processInfoMapper::getProcessInfo)
                 .map(this::mapProcessOs)
                 .filter(userFilter)
-                .limit(256)
                 .toList();
     }
 
