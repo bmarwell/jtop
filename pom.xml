@@ -8,7 +8,33 @@
   <artifactId>jtop</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+
   <name>jtop</name>
+  <description>jtop is an interactive process viewer, but written in Java to support a variety of operating systems.</description>
+
+  <inceptionYear>2024</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://spdx.org/licenses/Apache-2.0.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>bmarwell</id>
+      <name>Benjamin Marwell</name>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://github.com/bmarwell/jtop</url>
+    <connection>https://github.com/bmarwell/jtop.git</connection>
+    <developerConnection>git@github.com:bmarwell/jtop.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
   <properties>
     <java.version>21</java.version>
@@ -18,12 +44,16 @@
     <project.primarylicense.name>Apache-2.0</project.primarylicense.name>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+    <!-- app dependencies -->
     <dependency.lanterna.version>3.1.2</dependency.lanterna.version>
+
+    <!-- build dependencies -->
+    <dependency.cleanthat.version>2.20</dependency.cleanthat.version>
     <dependency.palantir-java-format.version>2.47.0</dependency.palantir-java-format.version>
 
     <!-- 3rd party plugins -->
+    <plugin.jreleaser.version>1.12.0</plugin.jreleaser.version>
     <plugin.spotless.version>2.43.0</plugin.spotless.version>
-    <dependency.cleanthat.version>2.20</dependency.cleanthat.version>
   </properties>
 
   <modules>
@@ -58,6 +88,11 @@
     <pluginManagement>
       <plugins>
         <!-- 3rd party plugins -->
+        <plugin>
+          <groupId>org.jreleaser</groupId>
+          <artifactId>jreleaser-maven-plugin</artifactId>
+          <version>${plugin.jreleaser.version}</version>
+        </plugin>
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
           <artifactId>spotless-maven-plugin</artifactId>

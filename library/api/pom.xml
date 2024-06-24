@@ -13,6 +13,6 @@
   <groupId>de.bmarwell.jtop</groupId>
   <artifactId>jtop-library-api</artifactId>
   <version>1.0-SNAPSHOT</version>
-
+  <name>jtop :: library :: api</name>
 
 </project>

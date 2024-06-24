@@ -15,6 +15,10 @@
   <version>1.0-SNAPSHOT</version>
   <name>jtop :: app</name>
 
+  <properties>
+    <app.mainClass>de.bmarwell.jtop.app.JtopCmd</app.mainClass>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bmarwell.jtop</groupId>
@@ -24,11 +28,16 @@
 
     <dependency>
       <groupId>de.bmarwell.jtop</groupId>
+      <artifactId>jtop-library-aix</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.bmarwell.jtop</groupId>
       <artifactId>jtop-library-linux</artifactId>
       <version>1.0-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
-
     <dependency>
       <groupId>de.bmarwell.jtop</groupId>
       <artifactId>jtop-library-osx</artifactId>
@@ -41,5 +50,88 @@
       <artifactId>lanterna</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-runtime-deps</id>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+              <prependGroupId>true</prependGroupId>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jreleaser</groupId>
+        <artifactId>jreleaser-maven-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <jreleaser>
+            <release>
+              <github>
+                <skipRelease>true</skipRelease>
+                <enabled>true</enabled>
+                <owner>bmarwell</owner>
+                <name>jtop</name>
+                <host>github.com</host>
+              </github>
+            </release>
+            <assemble>
+              <javaArchive>
+                <jtop>
+                  <active>ALWAYS</active>
+                  <formats>
+                    <format>ZIP</format>
+                  </formats>
+                  <options>
+                    <longFileMode>POSIX</longFileMode>
+                    <bigNumberMode>POSIX</bigNumberMode>
+                  </options>
+                  <mainJar>
+                    <path>${project.build.directory}/${project.build.finalName}.jar</path>
+                  </mainJar>
+                  <java>
+                    <mainClass>${app.mainClass}</mainClass>
+                    <options>
+                      -Xms64m -Xmx128m
+                    </options>
+                  </java>
+                  <fileSets>
+                    <fileSet>
+                      <input>${project.build.directory}/dependencies</input>
+                      <output>lib</output>
+                      <includes>
+                        <include>**/*.jar</include>
+                      </includes>
+                    </fileSet>
+                  </fileSets>
+                </jtop>
+              </javaArchive>
+            </assemble>
+          </jreleaser>
+        </configuration>
+        <executions>
+          <execution>
+            <id>assemble-modular-distribution</id>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
