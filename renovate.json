@@ -5,9 +5,8 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": [
-        "de.bmarwell.jtop:.*",
-        "de.bmarwell.jtop:*"
+      "matchPackagePatterns": [
+        "de\\.bmarwell\\.jtop:.*"
       ],
       "enabled": false
     }
