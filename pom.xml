@@ -8,6 +8,7 @@
   <artifactId>jtop</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <name>jtop</name>
 
   <properties>
     <java.version>21</java.version>
@@ -22,6 +23,7 @@
 
     <!-- 3rd party plugins -->
     <plugin.spotless.version>2.43.0</plugin.spotless.version>
+    <dependency.cleanthat.version>2.20</dependency.cleanthat.version>
   </properties>
 
   <modules>
@@ -43,6 +45,12 @@
         <artifactId>palantir-java-format</artifactId>
         <version>${dependency.palantir-java-format.version}</version>
       </dependency>
+      <dependency>
+        <groupId>io.github.solven-eu.cleanthat</groupId>
+        <artifactId>java</artifactId>
+        <version>${dependency.cleanthat.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -93,7 +101,7 @@
 
           <java>
             <cleanthat>
-              <version>2.11</version>
+              <version>${dependency.cleanthat.version}</version>
               <mutators>
                 <mutator>*</mutator>
               </mutators>

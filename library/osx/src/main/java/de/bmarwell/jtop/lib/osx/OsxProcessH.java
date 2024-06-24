@@ -13,20 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.bmarwell.jtop.lib.api;
+package de.bmarwell.jtop.lib.osx;
 
-import static java.util.Collections.emptyList;
+import de.bmarwell.jtop.lib.api.spi.AbstractProcessH;
 
-import java.util.Arrays;
-
-public class ProcessInfoMapper {
-
-    public ProcessInfo getProcessInfo(ProcessHandle ph) {
-        return new ProcessInfo(
-                ph.pid(),
-                ph.parent().map(ProcessHandle::pid).orElse(1L),
-                ph.info().user().orElse("user"),
-                ph.info().command().orElse(""),
-                ph.info().arguments().map(Arrays::asList).orElse(emptyList()));
-    }
-}
+public class OsxProcessH extends AbstractProcessH {}

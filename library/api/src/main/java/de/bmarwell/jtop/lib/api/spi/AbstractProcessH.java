@@ -19,13 +19,13 @@ import de.bmarwell.jtop.lib.api.ProcessInfo;
 import de.bmarwell.jtop.lib.api.ProcessInfoMapper;
 import java.util.List;
 
-public class AbstractProcessH implements ProcessH {
+public abstract class AbstractProcessH implements ProcessH {
 
     private final ProcessInfoMapper processInfoMapper = new ProcessInfoMapper();
 
     @Override
     public List<ProcessInfo> listAllProcesses() {
         final var processHandleStream = ProcessHandle.allProcesses();
-        return processHandleStream.map(ProcessInfoMapper::getProcessInfo).toList();
+        return processHandleStream.map(processInfoMapper::getProcessInfo).toList();
     }
 }

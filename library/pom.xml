@@ -14,10 +14,12 @@
   <artifactId>jtop-library</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <name>jtop :: library</name>
 
   <modules>
     <module>api</module>
     <module>linux</module>
+    <module>osx</module>
   </modules>
 
 
