@@ -1,0 +1,40 @@
+= jtop
+:toc: macro
+
+*jtop* is an experimental, interactive process viewer, just like the awesome https://htop.dev[htop].
+Unlike htop, *jtop* is written in pure Java (who would have guessed…) and makes use of the new https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html[Java 22 Foreign Function & Memory API], where needed.
+
+It will never be as feature-complete as htop, of course.
+This is just a showcase of what you can do with Java 22.
+
+image:https://github.com/bmarwell/jtop/actions/workflows/maven.yaml/badge.svg["Maven Build", link="https://github.com/bmarwell/jtop/actions/workflows/maven.yaml"]
+image:https://img.shields.io/badge/License-Apache_2.0-blue.svg[License,link=https://opensource.org/licenses/Apache-2.0]
+image:https://img.shields.io/badge/renovate-enabled-brightgreen.svg[Renovate,link=https://renovatebot.com]
+
+toc::[]
+
+== Compiling and running
+
+To compile, all you need is Java 22 or later on your system.
+Point the environment variable `JAVA_HOME` to it.
+For example, when using sdkman, just install java by executing:
+
+[source,bash]
+----
+sdk install java 22.0.1-tem
+sdk use java 22.0.1-tem
+----
+
+Then run the build with tests:
+
+[source,bash]
+----
+./mvnw verify
+----
+
+The app can then be executed like so:
+
+[source.bash]
+----
+./app/target/jreleaser/assemble/jtop/java-archive/work/*/bin/jtop
+----
