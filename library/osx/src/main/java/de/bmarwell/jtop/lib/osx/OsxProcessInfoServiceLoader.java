@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.bmarwell.jtop.lib.api;
+package de.bmarwell.jtop.lib.osx;
 
-import static java.util.Collections.emptyList;
+import de.bmarwell.jtop.lib.api.spi.ProcessH;
+import de.bmarwell.jtop.lib.api.spi.ProcessInfoServiceLoader;
+import java.util.Locale;
 
-import java.util.Arrays;
+public class OsxProcessInfoServiceLoader implements ProcessInfoServiceLoader {
+    @Override
+    public boolean isOs(String currentOs) {
+        return currentOs.toLowerCase(Locale.ROOT).startsWith("mac os x");
+    }
 
-public class ProcessInfoMapper {
-
-    public ProcessInfo getProcessInfo(ProcessHandle ph) {
-        return new ProcessInfo(
-                ph.pid(),
-                ph.parent().map(ProcessHandle::pid).orElse(1L),
-                ph.info().user().orElse("user"),
-                ph.info().command().orElse(""),
-                ph.info().arguments().map(Arrays::asList).orElse(emptyList()));
+    @Override
+    public ProcessH newProcessH() {
+        return new OsxProcessH();
     }
 }

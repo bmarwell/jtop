@@ -13,6 +13,7 @@
   <groupId>de.bmarwell.jtop</groupId>
   <artifactId>jtop-library-linux</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <name>jtop :: library :: linux</name>
 
   <dependencies>
     <dependency>

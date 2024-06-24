@@ -17,4 +17,8 @@ package de.bmarwell.jtop.lib.api;
 
 import java.util.List;
 
-public record ProcessInfo(long pid, Long aLong, String root, String command, List<String> strings) {}
+public record ProcessInfo(long pid, long ppid, String user, String command, List<String> args) {
+    public String commandLine() {
+        return command + " " + String.join(" ", args);
+    }
+}
