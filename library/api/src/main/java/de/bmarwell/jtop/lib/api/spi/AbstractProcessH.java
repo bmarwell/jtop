@@ -19,10 +19,12 @@ import de.bmarwell.jtop.lib.api.ProcessInfo;
 import de.bmarwell.jtop.lib.api.ProcessInfoMapper;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractProcessH implements ProcessH {
 
+    protected static final Pattern NULL_BYTE = Pattern.compile("\u0000");
     private final ProcessInfoMapper processInfoMapper = new ProcessInfoMapper();
 
     @Override

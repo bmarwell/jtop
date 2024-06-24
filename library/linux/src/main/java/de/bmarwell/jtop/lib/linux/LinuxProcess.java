@@ -25,11 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class LinuxProcess extends AbstractProcessH {
-
-    private static final Pattern NULL_BYTE = Pattern.compile("\u0000");
 
     @Override
     public ProcessInfo mapProcessOs(ProcessInfo processInfo) {

@@ -85,13 +85,13 @@ public class AixProcess extends AbstractProcessH {
                 return processInfo;
             }
 
-            String[] commandAndArgs = argsStringRead.split(" ", 2);
+            String[] commandAndArgs = NULL_BYTE.split(argsStringRead, 2);
 
             final List<String> args;
             if (commandAndArgs.length != 2) {
                 args = emptyList();
             } else {
-                args = Arrays.asList(commandAndArgs[1].split(" "));
+                args = Arrays.asList(NULL_BYTE.split(commandAndArgs[1]));
             }
 
             return new ProcessInfo(
