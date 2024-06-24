@@ -16,6 +16,7 @@
 package de.bmarwell.jtop.app;
 
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
@@ -79,6 +80,10 @@ public class JtopCmd implements Callable<Integer> {
                 }
 
                 if (keyStroke.isCtrlDown() && keyStroke.getCharacter().equals('c')) {
+                    return 0;
+                }
+
+                if (keyStroke.getKeyType() == KeyType.F10) {
                     return 0;
                 }
             }
