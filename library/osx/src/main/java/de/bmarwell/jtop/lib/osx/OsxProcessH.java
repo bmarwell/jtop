@@ -21,17 +21,47 @@ import static java.lang.foreign.MemorySegment.NULL;
 import de.bmarwell.jtop.lib.api.ProcessInfo;
 import de.bmarwell.jtop.lib.api.spi.AbstractProcessH;
 import de.bmarwell.jtop.lib.osx.ffm.errno_h;
+import de.bmarwell.jtop.lib.osx.ffm.libproc_h;
+import de.bmarwell.jtop.lib.osx.ffm.proc_bsdshortinfo;
 import de.bmarwell.jtop.lib.osx.ffm.sysctl_h;
 import de.bmarwell.jtop.lib.osx.ffm.sysctl_h_1;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OsxProcessH extends AbstractProcessH {
 
     @Override
     public ProcessInfo mapProcessOs(ProcessInfo processInfo) {
+        final String commName;
+
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment procBsdShortInfo = proc_bsdshortinfo.allocate(arena);
+
+            int returnLength = libproc_h.proc_pidinfo(
+                    Math.toIntExact(processInfo.pid()),
+                    libproc_h.PROC_PIDT_SHORTBSDINFO(),
+                    0,
+                    procBsdShortInfo,
+                    Math.toIntExact(proc_bsdshortinfo.sizeof()));
+
+            if (returnLength == proc_bsdshortinfo.sizeof()) {
+                String pbsiComm = proc_bsdshortinfo.pbsi_comm(procBsdShortInfo).getString(0, StandardCharsets.UTF_8);
+                if (pbsiComm != null
+                        && pbsiComm.length() > processInfo.commandLine().length()) {
+                    commName = pbsiComm;
+                } else {
+                    commName = processInfo.command();
+                }
+            } else {
+                commName = processInfo.command();
+            }
+        }
+
         try (Arena arena = Arena.ofConfined()) {
             // to get the exact args, we need to call sysctl on mac.
             MemorySegment mib = arena.allocate(MemoryLayout.sequenceLayout(3, ValueLayout.JAVA_INT));
@@ -59,7 +89,7 @@ public class OsxProcessH extends AbstractProcessH {
                             default -> "" + error;
                         };
 
-                return processInfo.withCommand("[" + sysctlRc + "|" + desc + "]" + processInfo.command());
+                return processInfo.withCommand("[" + sysctlRc + "|" + desc + "]" + commName);
             }
 
             /*
@@ -106,7 +136,34 @@ public class OsxProcessH extends AbstractProcessH {
             // first int in return space is the number of arguments.
             int numberOfArgs = sysctlBuffer.get(ValueLayout.JAVA_INT, 0);
 
-            return processInfo.withCommand("[n|" + numberOfArgs + "]" + processInfo.command());
+            List<String> newArgs = new ArrayList<>();
+
+            try {
+                List<String> newArgs2 = readArgs(numberOfArgs, sysctlBuffer);
+                newArgs.addAll(newArgs2);
+            } catch (Throwable exception) {
+                exception.printStackTrace();
+            }
+
+            return processInfo
+                    .withCommand("[n|" + numberOfArgs + "]" + commName)
+                    .withArgs(newArgs);
         }
+    }
+
+    private static List<String> readArgs(int numberOfArgs, MemorySegment sysctlBuffer) {
+        long offset = ValueLayout.JAVA_INT.byteAlignment();
+        List<String> newArgs = new ArrayList<>();
+
+        for (int i = 0; i < numberOfArgs; i++) {
+            MemorySegment address = sysctlBuffer.get(ValueLayout.ADDRESS, offset);
+            System.err.println("address: " + address);
+
+            String arg = address.getString(0);
+            newArgs.add(arg);
+
+            offset += ValueLayout.ADDRESS.byteAlignment();
+        }
+        return newArgs;
     }
 }
