@@ -50,7 +50,7 @@ public class LinuxProcess extends AbstractProcessH {
             final var cmdArgs = NULL_BYTE.split(cmdline, 2);
             List<String> args;
             if (cmdArgs.length == 2) {
-                args = Arrays.asList(cmdArgs[1].split("\u0000"));
+                args = Arrays.asList(NULL_BYTE.split(cmdArgs[1]));
             } else {
                 args = emptyList();
             }
