@@ -6,22 +6,23 @@
 
   <parent>
     <groupId>de.bmarwell.jtop</groupId>
-    <artifactId>jtop</artifactId>
+    <artifactId>jtop-library</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>de.bmarwell.jtop</groupId>
-  <artifactId>jtop-library</artifactId>
+  <artifactId>jtop-library-linux-noarch</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>jtop :: library</name>
+  <name>jtop :: library :: linux-noarch</name>
 
-  <modules>
-    <module>api</module>
-    <module>aix-ppc64</module>
-    <module>linux-noarch</module>
-    <module>darwin-aarch64</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>de.bmarwell.jtop</groupId>
+      <artifactId>jtop-library-api</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 
 
 </project>

@@ -88,6 +88,7 @@ public class JtopMainView {
         final var processInfoServiceLoader = ServiceLoader.load(ProcessInfoServiceLoader.class).stream()
                 .map(ServiceLoader.Provider::get)
                 .filter(pi -> pi.isOs(System.getProperty("os.name")))
+                .filter(pi -> pi.isArch(System.getProperty("os.arch")))
                 .findFirst()
                 .orElseThrow(
                         () -> new UnsupportedOperationException("OS not supported: " + System.getProperty("os.name")));
