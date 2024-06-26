@@ -13,13 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.bmarwell.jtop.lib.api.spi;
+package de.bmarwell.jtop.lib.linux;
 
-public interface ProcessInfoServiceLoader {
+import de.bmarwell.jtop.lib.api.spi.ProcessH;
+import de.bmarwell.jtop.lib.api.spi.ProcessInfoServiceLoader;
+import java.util.Locale;
 
-    boolean isOs(String currentOs);
+public class LinuxProcessInfoServiceLoader implements ProcessInfoServiceLoader {
 
-    boolean isArch(String currentArch);
+    @Override
+    public boolean isOs(String currentOs) {
+        return currentOs.toLowerCase(Locale.ROOT).startsWith("linux");
+    }
 
-    ProcessH newProcessH();
+    @Override
+    public boolean isArch(String currentArch) {
+        return true;
+    }
+
+    @Override
+    public ProcessH newProcessH() {
+        return new LinuxProcess();
+    }
 }
