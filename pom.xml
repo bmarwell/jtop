@@ -49,7 +49,7 @@
     <dependency.picocli.version>4.7.6</dependency.picocli.version>
 
     <!-- build dependencies -->
-    <dependency.cleanthat.version>2.21</dependency.cleanthat.version>
+    <dependency.cleanthat.version>2.22</dependency.cleanthat.version>
     <dependency.palantir-java-format.version>2.63.0</dependency.palantir-java-format.version>
 
     <!-- 3rd party plugins -->
