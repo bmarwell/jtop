@@ -13,8 +13,7 @@
     {
       "matchPackagePatterns": ["^org\\.apache\\.maven\\.plugins:.*"],
       "automerge": true,
-      "automergeType": "pr",
-      "mergeConfidence": "all-passed"
+      "automergeType": "pr"
     }
   ]
 }
