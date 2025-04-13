@@ -5,15 +5,17 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "de\\.bmarwell\\.jtop:.*"
-      ],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": [
+        "/de\\.bmarwell\\.jtop:.*/"
+      ]
     },
     {
-      "matchPackagePatterns": ["^org\\.apache\\.maven\\.plugins:.*"],
       "automerge": true,
-      "automergeType": "pr"
+      "automergeType": "pr",
+      "matchPackageNames": [
+        "/^org\\.apache\\.maven\\.plugins:.*/"
+      ]
     }
   ]
 }
