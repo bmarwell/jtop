@@ -53,7 +53,7 @@
     <dependency.palantir-java-format.version>2.63.0</dependency.palantir-java-format.version>
 
     <!-- 3rd party plugins -->
-    <plugin.jreleaser.version>1.17.0</plugin.jreleaser.version>
+    <plugin.jreleaser.version>1.18.0</plugin.jreleaser.version>
     <plugin.spotless.version>2.44.4</plugin.spotless.version>
   </properties>
 
