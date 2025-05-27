@@ -54,7 +54,7 @@
 
     <!-- 3rd party plugins -->
     <plugin.jreleaser.version>1.17.0</plugin.jreleaser.version>
-    <plugin.spotless.version>2.44.4</plugin.spotless.version>
+    <plugin.spotless.version>2.44.5</plugin.spotless.version>
   </properties>
 
   <modules>
