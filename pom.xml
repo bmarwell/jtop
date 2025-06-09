@@ -50,7 +50,7 @@
 
     <!-- build dependencies -->
     <dependency.cleanthat.version>2.22</dependency.cleanthat.version>
-    <dependency.palantir-java-format.version>2.63.0</dependency.palantir-java-format.version>
+    <dependency.palantir-java-format.version>2.68.0</dependency.palantir-java-format.version>
 
     <!-- 3rd party plugins -->
     <plugin.jreleaser.version>1.17.0</plugin.jreleaser.version>
